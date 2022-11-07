@@ -1,3 +1,8 @@
+from dotenv import load_dotenv
+import os
+
+load_dotenv()  # .env 파일에서 환경 변수를 불러옵니다.
+
 """
 Django settings for pjt project.
 
@@ -21,12 +26,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-nr*x6adjq_-b5h@(-z=8bq+m*7k4lx^(n3bweum0xu1tjx65yz"
+
+# SECRET_KEY = "django-insecure-nr*x6adjq_-b5h@(-z=8bq+m*7k4lx^(n3bweum0xu1tjx65yz"
+# 헤로쿠를 위해 이거로 수정
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
-ALLOWED_HOSTS = []
+
+# DEBUG = True
+# 헤로쿠를 위해 이거로 변경
+DEBUG = os.getenv("DEBUG") == "True"
+
+ALLOWED_HOSTS = ["127.0.0.1", "localhost", ".herokuapp.com"]
 
 
 # Application definition
@@ -47,6 +59,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -86,6 +99,10 @@ DATABASES = {
     }
 }
 
+import dj_database_url
+
+db_from_env = dj_database_url.config(conn_max_age=500)
+DATABASES["default"].update(db_from_env)
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -124,7 +141,8 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = "/static/"
-STATICFILES_DIRS = (os.path.join("static"),)
+STATIC_ROOT = BASE_DIR / "staticfiles"
+# STATICFILES_DIRS = (os.path.join("static"),)
 
 MEDIA_ROOT = BASE_DIR / "images"
 MEDIA_URL = "/media/"
